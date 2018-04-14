@@ -1,0 +1,3 @@
+Resoultion: 1024 x 768
+Graphics Quality: "Good"
+Windowed mode enabled: True
