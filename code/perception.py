@@ -178,7 +178,10 @@ def get_navigible_terrain_world_coordinates(img, source, destination,xpos,ypos,y
     xpix[pix_mask] = 0
     ypix[pix_mask] = 0
     xpix_w, ypix_w = pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
-    return xpix_w, ypix_w, threshed
+
+    dist, angles= to_polar_coords(xpix, ypix)
+    
+    return xpix_w, ypix_w, dist, angles
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
@@ -224,7 +227,7 @@ def perception_step(Rover):
                   [img_w/2 + dst_size/2, img_h - dst_size - bottom_offset], 
                   [img_w/2 - dst_size/2, img_h - dst_size - bottom_offset],
                   ])
-    navigable_x_world,navigable_y_world, threshed = get_navigible_terrain_world_coordinates(np.copy(img),\
+    navigable_x_world,navigable_y_world, rover_centric_pixel_distances, rover_centric_angles = get_navigible_terrain_world_coordinates(np.copy(img),\
                                                                                   source, \
                                                                                   destination,\
                                                                                   Rover.pos[0],\
@@ -268,5 +271,8 @@ def perception_step(Rover):
     Rover.worldmap[rock_y_world, rock_x_world, 1] = 255
     Rover.worldmap[rock_y_world, rock_x_world, 0] = 0
     Rover.worldmap[rock_y_world, rock_x_world, 2] = 0
+
+    Rover.nav_dists = rover_centric_pixel_distances
+    Rover.nav_angles = rover_centric_angles
     
     return Rover
