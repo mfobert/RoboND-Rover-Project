@@ -17,7 +17,7 @@ def color_thresh(img, rgb_thresh=(160, 160, 160)):
     # Return the binary image
     return color_select
 
-def bw_thresh(img, bw_threshold_value = 150):
+def bw_thresh(img, bw_threshold_value = 160):
     
     #convert to black and white with opencv
     img_bw = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -50,6 +50,7 @@ def rock_thresh(img):
     rocks[mask]=[1,1,1]
     
     return rocks
+
 
 
 # Define a function to convert from image coords to rover coords
@@ -160,7 +161,10 @@ def get_obstacle_world_coordinates(img, source, destination,xpos,ypos,yaw,world_
     pix_mask = (np.arctan2(ypix,xpix)*180/np.pi)**2 > 30**2
     xpix[pix_mask] = 0
     ypix[pix_mask] = 0
-    return pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
+
+    dist, angles= to_polar_coords(xpix, ypix)
+    xpix_w, ypix_w = pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
+    return xpix_w, ypix_w ,dist, angles
 
 def get_navigible_terrain_world_coordinates(img, source, destination,xpos,ypos,yaw,world_size,scale):
     threshed = bw_thresh(cut_top_of_colored_image(img))
@@ -180,8 +184,19 @@ def get_navigible_terrain_world_coordinates(img, source, destination,xpos,ypos,y
     xpix_w, ypix_w = pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
 
     dist, angles= to_polar_coords(xpix, ypix)
-    
+
     return xpix_w, ypix_w, dist, angles
+
+def wall_on_left_set(obstacles_rover_polar_angles, Rover):
+    wall_on_left_mask = obstacles_rover_polar_angles*180/np.pi > 10
+    wall_count = np.zeros_like(wall_on_left_mask)
+    wall_count[wall_on_left_mask] = 1
+    Rover.wall_left_amount = np.count_nonzero(wall_count)
+    if np.count_nonzero(wall_count) > Rover.wall_on_left_threshold_pix:
+        Rover.wall_on_left = True
+    else:
+        Rover.wall_on_left = False
+    
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
@@ -245,7 +260,7 @@ def perception_step(Rover):
                                                           200,\
                                                           10)
     
-    obstacle_x_world, obstacle_y_world = get_obstacle_world_coordinates(np.copy(img),\
+    obstacle_x_world, obstacle_y_world,dist_obstacles_rover, angles_obstacles_rover = get_obstacle_world_coordinates(np.copy(img),\
                                                                       source, \
                                                                       destination,\
                                                                       Rover.pos[0],\
@@ -254,7 +269,8 @@ def perception_step(Rover):
                                                                       200,\
                                                                       10)
         
-        
+    wall_on_left_set(angles_obstacles_rover, Rover)
+    
     Rover.map_count[obstacle_y_world, obstacle_x_world, 0] += 1
     Rover.map_count[navigable_y_world, navigable_x_world, 1] += 1
     

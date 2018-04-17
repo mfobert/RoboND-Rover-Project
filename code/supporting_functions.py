@@ -140,9 +140,13 @@ def create_output_images(Rover):
                   cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
       cv2.putText(map_add,"  Collected: "+str(Rover.samples_collected), (0, 85), 
                   cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
-      cv2.putText(map_add,"  Rover Mode: "+str(Rover.mode), (0, 100), 
+      cv2.putText(map_add,"Rover Mode: "+str(Rover.mode), (0, 100), 
                   cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
-      cv2.putText(map_add,"  Test val: "+str(Rover.nav_dists.mean()), (0, 115), 
+      cv2.putText(map_add,"Mean distances: "+str(Rover.nav_dists.mean()), (0, 115), 
+                  cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
+      cv2.putText(map_add,"Wall left: "+str(Rover.wall_on_left), (0, 130), 
+                  cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
+      cv2.putText(map_add,"Wall left #: "+str(Rover.wall_left_amount), (0, 145), 
                   cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
       
       # Convert map and vision image to base64 strings for sending to server
