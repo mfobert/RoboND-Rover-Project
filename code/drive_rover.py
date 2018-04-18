@@ -38,8 +38,6 @@ ground_truth_3d = np.dstack((ground_truth*0, ground_truth*255, ground_truth*0)).
 # Define RoverState() class to retain rover state parameters
 class RoverState():
     def __init__(self):
-        self.aggresive_steering_amplitude = 5
-        self.clear_path = 6
         self.start_time = None # To record the start time of navigation
         self.total_time = None # To record total duration of naviagation
         self.img = None # Current camera image
@@ -54,15 +52,9 @@ class RoverState():
         self.nav_angles = None # Angles of navigable terrain pixels
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
-        self.mode = 'Find Wall' # Current mode (can be forward or stop)
+        self.mode = 'Find Wall' # Current rover mode
         self.throttle_set = .5 # Throttle setting when accelerating
         self.brake_set = 5 # Brake setting when braking
-        # The stop_forward and go_forward fields below represent total count
-        # of navigable terrain pixels.  This is a very crude form of knowing
-        # when you can keep going and when you should stop.  Feel free to
-        # get creative in adding new fields or modifying these!
-        #self.stop_forward = 2600 # Threshold to initiate stopping
-        #self.go_forward = 500 # Threshold to go forward again
         self.max_vel = 1.5 # Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
@@ -81,14 +73,16 @@ class RoverState():
         self.picking_up = 0 # Will be set to telemetry value data["picking_up"]
         self.send_pickup = False # Set to True to trigger rock pickup
         self.wall_on_left = None # Boolean if wall on left of rover
-        self.wall_on_left_threshold_pix = 600 #
-        self.wall_left_amount = None
-        self.time_without_seeing_wall = 0
-        self.time_lost_wall_threshold =5
-        self.time_last = 0.0
-
-        self.time_mean_distance_less_than_thresh = 0
-        self.max_time_mean_distance_less_than_thresh = 1.5
+        self.wall_on_left_threshold_pix = 600 #the threshold for determining if there is a wall on the
+            #left of the rover
+        self.wall_left_amount = None #for outputting/debugging
+        self.time_without_seeing_wall = 0 #record how long we havent seen a wall on the left
+        self.time_lost_wall_threshold =5 #if we havent seen a wall for this long, we lost the wall
+        self.time_last = 0.0 #the last time recorded
+        self.time_mean_distance_less_than_thresh = 0 #record how long an obstacle is in our path
+        self.max_time_mean_distance_less_than_thresh = 1.5  #if obstacle in path for this long, not clear path.
+        self.aggresive_steering_amplitude = 5 #How aggresive the rover is when steering towards an optimal path
+        self.clear_path = 6 #The threshold for determining if there is a clear path for the rover        
 # Initialize our rover 
 Rover = RoverState()
 
