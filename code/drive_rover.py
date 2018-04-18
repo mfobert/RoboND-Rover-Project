@@ -82,7 +82,15 @@ class RoverState():
         self.time_mean_distance_less_than_thresh = 0 #record how long an obstacle is in our path
         self.max_time_mean_distance_less_than_thresh = 1.5  #if obstacle in path for this long, not clear path.
         self.aggresive_steering_amplitude = 5 #How aggresive the rover is when steering towards an optimal path
-        self.clear_path = 6 #The threshold for determining if there is a clear path for the rover        
+        self.clear_path = 6 #The threshold for determining if there is a clear path for the rover
+
+        self.rover_stuck_check_interval = 15 #check if the rover is stuck this often (seconds)
+        self.rover_stuck_check_time_last_checked = 0
+        self.rover_stuck_check_distance_threshold = 0.5
+        #store these positions to compare with at each stuck-check interval
+        self.rover_stuck_check_last_x = 0 
+        self.rover_stuck_check_last_y = 0
+        self.rover_stuck_yaw = None
 # Initialize our rover 
 Rover = RoverState()
 

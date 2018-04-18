@@ -30,6 +30,30 @@ def go_forward(Rover):
         #if the wall is not seen on the left of the rover, aggressively steer in it's direction
         Rover.steer = 15
 
+def sqr_distance(x1,y1,x2,y2):
+    return (x1-x2)**2 + (y1-y2)**2
+
+def stuck(Rover):
+    #every so often, check if the position of the rover has changed in
+    #a substantial way - otherwise we are stuck.
+    if  Rover.total_time - Rover.rover_stuck_check_time_last_checked > Rover.rover_stuck_check_interval:
+        #if its time to check if we're stuck
+        Rover.rover_stuck_check_time_last_checked = Rover.total_time
+
+        #compare the distance to the last time checked
+        if (Rover.rover_stuck_check_distance_threshold**2 < \
+            sqr_distance(Rover.pos[0], Rover.pos[1], \
+                         Rover.rover_stuck_check_last_x, Rover.rover_stuck_check_last_y)):
+                #rover is not stuck, update values and return false
+                Rover.rover_stuck_check_last_x = Rover.pos[0]
+                Rover.rover_stuck_check_last_y = Rover.pos[1]
+        else:
+            #Rover is stuck
+            Rover.rover_stuck_yaw = Rover.yaw #remember stuck yaw for future processing
+            Rover.mode = "Stuck"
+            stop(Rover)
+    
+
 #Stop the rover...
 def stop(Rover):
     Rover.throttle = 0
@@ -55,6 +79,9 @@ def decision_step(Rover):
         elif Rover.mode == "Follow Wall":
             #Once we have found the wall, follow it always with it on the left
 
+            #check if rover is stuck
+            stuck(Rover)
+                
             if Rover.time_without_seeing_wall > Rover.time_lost_wall_threshold:
                 #Rover lost wall - look for it, it will be on the left.
                 stop(Rover)
@@ -88,6 +115,7 @@ def decision_step(Rover):
                     
         elif Rover.mode == "Lost wall":
             #the rover has lost the wall
+            
             if Rover.vel > 0:
                 #stop the rover
                 stop(Rover)
@@ -115,6 +143,14 @@ def decision_step(Rover):
                 else:
                     #steer right until clear path
                     Rover.brake = 0
+                    Rover.steer = -15
+        elif Rover.mode == "Stuck":
+                #turn right atleast 90 degrees
+                if (Rover.yaw - Rover.rover_stuck_yaw)**2 > 90**2:
+                    #70 degrees accomplished
+                    Rover.mode = "Follow Wall"
+                else:
+                    Rover.throttle = 0
                     Rover.steer = -15
         
             
