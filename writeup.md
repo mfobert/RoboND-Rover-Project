@@ -23,7 +23,7 @@ To train and calibrate the Rover's perception algorithms, a Jupyter notebook env
 * Graphics Quality: "Good"
 * Windowed mode enabled: True
 
-<p>To see a sample video that is produced with the `process_image()` function, see [here](Writeup Images/Mapping.mp4) </p>
+To see a sample video that is produced with the `process_image()` function, see [here](Writeup%20Images/Mapping.mp4)
 
 **Autonomous Navigation / Mapping**
 
