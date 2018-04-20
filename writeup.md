@@ -9,16 +9,15 @@ The search and sample return project was designed (by the [Udacity](https://www.
 
 The project was modelled on the [NASA sample return challenge](https://www.nasa.gov/directorates/spacetech/centennial_challenges/sample_return_robot/about.html), which has the overall goal of <i>programming a rover to autonomously map an environment while searching for rock samples of interest</i>.
 
-<p>The project utilized the Unity game engine to simulate an environment of a Rover on Mars, surrounded by rock-walls (unnavagable terrain) and rock-samples as shown in the image below:</p>
+The project utilized the Unity game engine to simulate an environment of a Rover on Mars, surrounded by rock-walls (unnavagable terrain) and rock-samples as shown in the image below:
 
-![Environment.png](attachment:Environment.png)
+<img src="Writeup%20Images/Environment.png" width="80%">
 
-<p>Under the conditions perscribed by the environment, the task was to take images from the rover's perspective camera, perform transforms on the images to map them to a top-down view of the environment, and then apply various computer-vision techniques in order to classify different parts of the environemnt. With the environment classified, the task was to create a decision tree for the Rover to be able to navigate and map the environment in a logical way, identifying traversible area, obstacles, and rock samples along the way.</p>
-
+Under the conditions perscribed by the environment, the task was to take images from the rover's perspective camera, perform transforms on the images to map them to a top-down view of the environment, and then apply various computer-vision techniques in order to classify different parts of the environemnt. With the environment classified, the task was to create a decision tree for the Rover to be able to navigate and map the environment in a logical way, identifying traversible area, obstacles, and rock samples along the way.
 
 **Training / Calibration**  
 
-<p>To train and calibrate the Rover's perception algorithms, a Jupyter notebook environment was used, which can be found [here](code/Rover_Project_Test_Notebook.ipynb). The process_image() function was formed such that it could output a video that successfully maps the environment by using test images gathered in the training simulator. In order to succesfully reproduce these test images (and to run autonomously), one must be sure to use the proper simulator parameters listed here: </p>
+To train and calibrate the Rover's perception algorithms, a Jupyter notebook environment was used, which can be found [here](code/Rover_Project_Test_Notebook.ipynb). The process_image() function was formed such that it could output a video that successfully maps the environment by using test images gathered in the training simulator. In order to succesfully reproduce these test images (and to run autonomously), one must be sure to use the proper simulator parameters listed here: 
 
 * Resoultion: 1024 x 768
 * Graphics Quality: "Good"
@@ -28,7 +27,7 @@ The project was modelled on the [NASA sample return challenge](https://www.nasa.
 
 **Autonomous Navigation / Mapping**
 
-<p> In order to complete the Autonomous Navigation/Mapping Step, various python files were edited which can be found in the `code` directory of this repository; these files are as stated:</p>
+ In order to complete the Autonomous Navigation/Mapping Step, various python files were edited which can be found in the `code` directory of this repository; these files are as stated:
 * `perception.py` - for percieving the environment
 * `decision.py` - for making decisions on how to drive the Rover based on the environment
 * `drive_rover.py` - for keeping a handle on the Rover's state, and communicating with the simulator
