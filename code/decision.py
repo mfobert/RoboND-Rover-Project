@@ -28,7 +28,7 @@ def go_forward(Rover):
     
     if not Rover.wall_on_left:
         #if the wall is not seen on the left of the rover, aggressively steer in it's direction
-        Rover.steer = 15
+        Rover.steer = 10
 
 def sqr_distance(x1,y1,x2,y2):
     return (x1-x2)**2 + (y1-y2)**2
@@ -52,7 +52,15 @@ def stuck(Rover):
             Rover.rover_stuck_yaw = Rover.yaw #remember stuck yaw for future processing
             Rover.mode = "Stuck"
             stop(Rover)
-    
+
+def found_rock(Rover):
+    if len(Rover.rock_angles) > Rover.rock_thresh:
+        Rover.mode = "ROCK"
+        Rover.rock_mode_stage = 0
+        Rover.pos_when_finding_rock = Rover.pos
+        Rover.yaw_when_finding_rock = Rover.yaw
+        stop(Rover)
+        Rover.time_rock = Rover.total_time
 
 #Stop the rover...
 def stop(Rover):
@@ -67,7 +75,7 @@ def decision_step(Rover):
 
     #if our data is good
     if Rover.nav_angles is not None:
-
+        
         if Rover.mode == "Find Wall":
             #at the start we need to find a wall to follow in the first place
             #drive forward until wall aquired.
@@ -101,6 +109,7 @@ def decision_step(Rover):
                     #if there is a clear path forwards, go that way
                     go_forward(Rover)
                     Rover.time_mean_distance_less_than_thresh=0
+                    found_rock(Rover) #check if we see a rock
                 else:
                     #if we have a disrupted path, add to the amount of time this has been happening
                     Rover.time_mean_distance_less_than_thresh += Rover.total_time-Rover.time_last
@@ -145,13 +154,40 @@ def decision_step(Rover):
                     Rover.brake = 0
                     Rover.steer = -15
         elif Rover.mode == "Stuck":
+                Rover.send_pickup = False
                 #turn right atleast 90 degrees
                 if (Rover.yaw - Rover.rover_stuck_yaw)**2 > 90**2:
-                    #70 degrees accomplished
+                    #90 degrees accomplished
                     Rover.mode = "Follow Wall"
                 else:
                     Rover.throttle = 0
                     Rover.steer = -15
+        elif Rover.mode == "ROCK":
+            if Rover.total_time - Rover.time_rock < Rover.time_rock_max:
+                if not Rover.near_sample:
+                    #stop the rover
+                    Rover.brake = 0
+                    Rover.throttle = 0.1
+                    if len(Rover.rock_angles) >0:
+                        Rover.steer = np.clip(np.mean(Rover.rock_angles * 180/np.pi), -15, 15)
+                    else:
+                        Rover.steer = 0
+                else:
+                    if Rover.vel > 0.01:
+                        stop(Rover)
+                    else:
+                        Rover.brake = 0
+                        Rover.send_pickup = True
+                        Rover.rover_stuck_yaw = Rover.yaw
+                        Rover.mode = "Stuck"
+            else:
+                Rover.rover_stuck_yaw = Rover.yaw
+                Rover.mode = "Stuck"
+                
+            #except:
+            #    Rover.mode = "Follow Wall"
+            
+                    
         
             
     else:
@@ -160,6 +196,7 @@ def decision_step(Rover):
         Rover.throttle = 0
         Rover.steer = 0
         Rover.brake = 0
+        
 
         
     

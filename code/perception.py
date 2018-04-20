@@ -130,9 +130,13 @@ def get_rock_world_coordinates(img, source, destination,xpos,ypos,yaw,world_size
     xpix=xpix[pix_mask] 
     ypix=ypix[pix_mask] 
 
-    #return the world coordinates of the rocks
-    return pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
+    #return the world coordinates of the rocks and rover polar coordinates
+    x_pix_world,y_pix_world =pix_to_world(xpix,ypix,xpos,ypos,yaw,world_size,scale)
 
+    #get the polar values
+    dist, angles= to_polar_coords(xpix, ypix)
+    
+    return x_pix_world,y_pix_world,dist, angles
 
 #cuts off the top of a colored image. Can be used to cut out the sky
 #from most of the perception analysis
@@ -277,7 +281,10 @@ def perception_step(Rover):
                                                           10)
     
     #percieve rock data in xy-world coordinates
-    rock_x_world, rock_y_world = get_rock_world_coordinates(np.copy(img),\
+    rock_x_world, \
+    rock_y_world, \
+    Rover.rock_distances, \
+    Rover.rock_angles = get_rock_world_coordinates(np.copy(img),\
                                                           source, \
                                                           destination,\
                                                           Rover.pos[0],\
@@ -285,6 +292,7 @@ def perception_step(Rover):
                                                           Rover.yaw,\
                                                           200,\
                                                           10)
+    
     #percieve obstacle data in xy-world/polar-rover-centric coordiantes
     obstacle_x_world, \
     obstacle_y_world, \
