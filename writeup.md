@@ -115,9 +115,15 @@ In the case that the rover detects a rock, it goes into "ROCK" mode for a certai
 
 **Mapping Results**
 
-The rover regularly maps the desired environment with over 85% fidelity and over 90% mapped, while locating and picking up the majority of rocks. 
+The rover regularly maps the desired environment with over 85% fidelity and over 90% mapped, while locating and picking up the majority of rocks. This was tested on a PC with the following simulator settings:
+
+* Resoultion: 1024 x 768
+* Graphics Quality: "Good"
+* Windowed mode enabled: True
+* FPS: 11
+
 
 **Future Improvements**
-To be filled out.
+There are many things that could be improved upon for the current release. The control algorithm of the rover's steering could be improved such that it resulted in less choppy driving, the input parameters could be further tuned to allow for more efficient mapping, and the decision tree could be made much more complex in order to handle most scenarios. There are still some cases in which the rover can get 'super stuck' - more logic could be gathered into these events and the corresponding rules to avoid these events could be programmed into the decision tree. The parameters for the perception algorithm could also be adjusted to allow for better path planning. Overall, even without these improvements however, the project has served its purpose of introducing the three essential elements of robotics: perception, decision making, and action. 
 
 
